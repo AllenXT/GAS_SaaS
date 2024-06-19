@@ -1,0 +1,83 @@
+<!--
+annotate.html - Direct upload to Amazon S3 using signed POST request
+Copyright (C) 2011-2020 Vas Vasiliadis <vas@uchicago.edu>
+University of Chicago
+-->
+
+{% extends "base.html" %}
+
+{% block title %}Annotate{% endblock %}
+
+{% block body %}
+
+  {% include "header.html" %}
+
+  <div class="container">
+    
+    <div class="page-header">
+      <h1>Annotate VCF File</h1>
+    </div>
+
+  	<div class="form-wrapper">
+      <form role="form" action="{{ s3_post.url }}" method="post" enctype="multipart/form-data">
+        {% for key, value in s3_post.fields.items() %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}" />
+        {% endfor %}
+
+        <div class="row">
+          <div class="form-group col-md-6">
+            <label for="upload">Select VCF Input File</label>
+            <div class="input-group col-md-12">
+              <span class="input-group-btn">
+                <span class="btn btn-default btn-file btn-lg">Browse&hellip; <input type="file" name="file" id="upload-file" /></span>
+              </span>
+              <input type="text" class="form-control col-md-6 input-lg" readonly />
+            </div>
+          </div>
+        </div>
+
+        <br />
+  			<div class="form-actions">
+  				<input class="btn btn-lg btn-primary" type="submit" value="Annotate" />
+  			</div>
+      </form>
+    </div>
+    
+  </div>
+
+  <!-- limit free user requested file no more than 150KB -->
+  <script type="text/javascript">
+    function checkUploadFile(userRole) {
+      var uploadFile = document.getElementById('upload-file').files[0];
+
+      // check if the upload file is .vcf file
+      if (uploadFile.name.split('.').pop() !== 'vcf') {
+        alert('Please upload a .vcf file!');
+        // clear the file input
+        document.getElementById('upload-file').value = '';
+        return false;
+      }
+
+      // check if the user is free user limit the file size to 150KB
+      if (userRole === "free_user") {
+        if (uploadFile.size > 150 * 1024) {
+          alert('File size exceeds the limit! Please subscribe to upload larger files.');
+          // clear the file input
+          document.getElementById('upload-file').value = '';
+          return false;
+        }
+      }
+
+      return true; 
+    }
+
+    // prevent invalid file upload
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelector("form").addEventListener('submit', function(event) {
+        if (!checkUploadFile(`{{ session['role'] }}`)) {
+          event.preventDefault();
+        }
+      });
+    });
+  </script>
+{% endblock %}
