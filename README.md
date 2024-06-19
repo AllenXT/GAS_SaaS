@@ -20,7 +20,7 @@ The GAS provides the following functionalities:
 * **Job Management**: Free users can view and download their annotation job results within a specified time frame, while Premium users have no time restrictions.
 * **Data Archival**: Free users' data is archived to Glacier after a specific period.
 
-![Framework Architecture]()
+![Framework Architecture](https://github.com/AllenXT/GAS_SaaS/blob/main/images/framework.png)
 
 ## Archive Process
 
